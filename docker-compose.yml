@@ -55,6 +55,18 @@ services:
     depends_on:
       - zookeeper
 
+  tabix:
+    image: spoonest/clickhouse-tabix-web-client
+    container_name: tabix
+    networks:
+      - clickhouse-network
+    ports:
+      - "8080:80"
+    depends_on:
+      - clickhouse01
+      - clickhouse02
+      - clickhouse03
+
 networks:
   clickhouse-network:
     driver: bridge
