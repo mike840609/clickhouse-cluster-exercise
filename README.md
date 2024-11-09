@@ -20,9 +20,10 @@ curl http://localhost:8123/ping
 
 ### basic info
 web based playground: [http://localhost:8123/play](http://localhost:8123/play) 
+```
 account: default
 pwd: (empty)
-
+```
 
 ## clikchouse native GUI
 ![My Diagram](img/image.png)
