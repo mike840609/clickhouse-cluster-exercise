@@ -1,0 +1,16 @@
+<!-- 將此配置保存為 network.xml 在每個節點的 config.d 目錄下 -->
+<yandex>
+    <http_port>8123</http_port>
+    <tcp_port>9000</tcp_port>
+    
+    <listen_host>0.0.0.0</listen_host>
+    
+    <http_server_default_response>
+        <name>clickhouse</name>
+    </http_server_default_response>
+
+    <!-- 允許來自任何主機的連線 -->
+    <networks>
+        <ip>::/0</ip>
+    </networks>
+</yandex>
