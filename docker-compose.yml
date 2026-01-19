@@ -1,15 +1,6 @@
 version: '3.7'
 
 services:
-  zookeeper:
-    image: zookeeper:3.7
-    container_name: zookeeper
-    hostname: zookeeper
-    networks:
-      - clickhouse-network
-    ports:
-      - "2181:2181"
-
   clickhouse01:
     image: clickhouse/clickhouse-server:latest
     container_name: clickhouse01
@@ -22,8 +13,6 @@ services:
     volumes:
       - ./clickhouse01:/etc/clickhouse-server/config.d
       - clickhouse01_data:/var/lib/clickhouse
-    depends_on:
-      - zookeeper
 
   clickhouse02:
     image: clickhouse/clickhouse-server:latest
@@ -38,7 +27,7 @@ services:
       - ./clickhouse02:/etc/clickhouse-server/config.d
       - clickhouse02_data:/var/lib/clickhouse
     depends_on:
-      - zookeeper
+      - clickhouse01
 
   clickhouse03:
     image: clickhouse/clickhouse-server:latest
@@ -53,7 +42,7 @@ services:
       - ./clickhouse03:/etc/clickhouse-server/config.d
       - clickhouse03_data:/var/lib/clickhouse
     depends_on:
-      - zookeeper
+      - clickhouse01
 
   tabix:
     image: spoonest/clickhouse-tabix-web-client

@@ -1,0 +1,2 @@
+CREATE USER IF NOT EXISTS admin IDENTIFIED WITH plaintext_password BY 'test';
+GRANT ALL ON *.* TO admin WITH GRANT OPTION;

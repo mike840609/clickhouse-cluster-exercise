@@ -26,8 +26,16 @@
 
     <zookeeper>
         <node>
-            <host>zookeeper</host>
-            <port>2181</port>
+            <host>clickhouse01</host>
+            <port>9181</port>
+        </node>
+        <node>
+            <host>clickhouse02</host>
+            <port>9181</port>
+        </node>
+        <node>
+            <host>clickhouse03</host>
+            <port>9181</port>
         </node>
     </zookeeper>
 </yandex>
