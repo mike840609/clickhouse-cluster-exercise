@@ -8,6 +8,8 @@ New to ClickHouse? Check out the [docs/](docs/) folder:
 - [ClickHouse Basics](docs/clickhouse-basics.md) - Column storage, OLAP vs OLTP, when to use
 - [SQL Differences](docs/sql-differences.md) - Coming from MySQL/PostgreSQL
 - [Best Practices](docs/best-practices.md) - Insert patterns, schema design, performance
+- [Replication & Distributed](docs/replication-distributed.md) - How data replicates across nodes
+- [Debugging & Troubleshooting](docs/debugging-troubleshooting.md) - EXPLAIN, system tables, common issues
 
 ### Architecture
 
