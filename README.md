@@ -2,6 +2,13 @@
 
 ClickHouse Cluster Setup with 1 Shard and 3 Replicas using **ClickHouse Keeper** (ZooKeeper-free).
 
+### Documentation
+
+New to ClickHouse? Check out the [docs/](docs/) folder:
+- [ClickHouse Basics](docs/clickhouse-basics.md) - Column storage, OLAP vs OLTP, when to use
+- [SQL Differences](docs/sql-differences.md) - Coming from MySQL/PostgreSQL
+- [Best Practices](docs/best-practices.md) - Insert patterns, schema design, performance
+
 ### Architecture
 
 - **1 Shard, 3 Replicas**: clickhouse01, clickhouse02, clickhouse03
