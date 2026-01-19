@@ -4,82 +4,86 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This repository contains a ClickHouse cluster setup using Docker Compose with 1 shard and 3 replica nodes for high availability. The cluster uses ZooKeeper for coordination and includes Tabix for web-based database management.
+ClickHouse cluster setup using Docker Compose with 1 shard and 3 replica nodes. Uses embedded ClickHouse Keeper for coordination (ZooKeeper-free).
 
 ## Architecture
 
 ### Cluster Topology
 - **1 Shard** with **3 Replicas** (clickhouse01, clickhouse02, clickhouse03)
-- All replicas in the same shard use `internal_replication: true`
-- **ZooKeeper** handles distributed coordination for replication
-- **Tabix GUI** provides web-based query interface
+- All replicas use `internal_replication: true`
+- **ClickHouse Keeper** embedded in each node for distributed coordination
+- **Tabix GUI** for web-based queries
 
-### Node Configuration
-Each ClickHouse node has:
-- `macros.xml` - Defines shard and replica identifiers, remote server cluster topology, and ZooKeeper connection
-- `network.xml` - Configures HTTP/TCP ports and network access (allows connections from any host)
-
-The replica identifier in `macros.xml` differs per node (clickhouse01/02/03) while all share the same shard number (1).
+### Node Configuration Files
+Each `clickhouse0X/` directory contains:
+- `macros.xml` - Shard/replica identifiers, remote servers, Keeper connection (port 9181)
+- `network.xml` - HTTP/TCP ports and network access
+- `keeper.xml` - Raft configuration for embedded Keeper (server IDs 1-3, port 9234)
 
 ### Port Mappings
-- **clickhouse01**: HTTP 8123, Native 9101 (container 9000)
-- **clickhouse02**: HTTP 8124, Native 9102 (container 9000)
-- **clickhouse03**: HTTP 8125, Native 9103 (container 9000)
-- **ZooKeeper**: 2181
-- **Tabix**: 8080
+| Service | HTTP | Native |
+|---------|------|--------|
+| clickhouse01 | 8123 | 9101 |
+| clickhouse02 | 8124 | 9102 |
+| clickhouse03 | 8125 | 9103 |
+| Tabix GUI | 8080 | - |
 
 ## Commands
 
-### Cluster Management
+### Quick Start
 ```bash
-# Start the cluster
-docker compose up -d
-
-# Stop the cluster
-docker compose down
-
-# Check cluster health
-curl http://localhost:8123/ping
-# Expected response: "Ok."
+./start_and_seed.sh all    # Clear, init, and seed with mock data
+./start_and_seed.sh init   # Start cluster and create tables
+./start_and_seed.sh seed   # Insert mock data
+./start_and_seed.sh clear  # Stop and remove all data volumes
 ```
 
-### Accessing ClickHouse
-
-**Web Interfaces:**
-- ClickHouse native GUI: http://localhost:8123/play
-- Tabix GUI: http://localhost:8080
-
-**Default Credentials:**
-- Username: `default`
-- Password: (empty)
-
-**CLI Access:**
+### Manual Docker Commands
 ```bash
-# Connect to clickhouse01
-docker exec -it clickhouse01 clickhouse-client
+docker compose up -d       # Start cluster
+docker compose down        # Stop cluster
+curl http://localhost:8123/ping  # Health check (returns "Ok.")
+```
 
-# Connect to specific node
+### CLI Access
+```bash
+docker exec -it clickhouse01 clickhouse-client
 docker exec -it clickhouse02 clickhouse-client
 docker exec -it clickhouse03 clickhouse-client
 ```
 
-### Admin User Setup
-The `init_admin.sql` file creates an admin user with full privileges:
+### Admin User
 ```bash
-# Execute on any node
 docker exec -i clickhouse01 clickhouse-client < init_admin.sql
 ```
-Admin credentials: username `admin`, password `test`
+Credentials: `admin` / `test`
 
 ## Working with Replicated Tables
 
-When creating replicated tables in this cluster, use the macros defined in configuration:
+Use macros for automatic shard/replica substitution:
 ```sql
-CREATE TABLE example_table ON CLUSTER default (
+CREATE TABLE example ON CLUSTER default (
     id UInt32,
     data String
-) ENGINE = ReplicatedMergeTree('/clickhouse/tables/{shard}/example_table', '{replica}')
+) ENGINE = ReplicatedMergeTree('/clickhouse/tables/{shard}/example', '{replica}')
 ORDER BY id;
 ```
 
-The `{shard}` and `{replica}` macros are automatically substituted based on each node's `macros.xml` configuration.
+The `{shard}` and `{replica}` macros expand based on each node's `macros.xml`.
+
+## Useful Queries
+
+```sql
+-- Check Keeper status
+SELECT * FROM system.keeper_raft_state;
+
+-- Check replication health
+SELECT database, table, is_leader, active_replicas, queue_size FROM system.replicas;
+
+-- Verify data across replicas
+SELECT hostName(), count() FROM events;
+```
+
+## Documentation
+
+See `docs/` for ClickHouse beginner guides on basics, SQL differences, best practices, replication, and debugging.
