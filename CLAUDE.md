@@ -52,6 +52,17 @@ docker exec -it clickhouse02 clickhouse-client
 docker exec -it clickhouse03 clickhouse-client
 ```
 
+### Web GUI Access
+**ClickHouse Play** (built-in): http://localhost:8123/play
+- Account: `default`
+- Password: (empty)
+
+**Tabix GUI**: http://localhost:8080
+- Name: `dev`
+- Host: `127.0.0.1:8123`
+- Login: `default`
+- Password: (empty)
+
 ### Admin User
 ```bash
 docker exec -i clickhouse01 clickhouse-client < init_admin.sql
@@ -82,8 +93,31 @@ SELECT database, table, is_leader, active_replicas, queue_size FROM system.repli
 
 -- Verify data across replicas
 SELECT hostName(), count() FROM events;
+
+-- View data parts (MergeTree storage)
+SELECT name, rows, bytes_on_disk, modification_time
+FROM system.parts
+WHERE table = 'events' AND active
+ORDER BY modification_time DESC;
 ```
+
+## Mock Data
+
+After running `./start_and_seed.sh seed`:
+
+| Table | Records | Description |
+|-------|---------|-------------|
+| users | 5 | User accounts |
+| products | 10 | Product catalog |
+| events | 15 | User activity events |
 
 ## Documentation
 
-See `docs/` for ClickHouse beginner guides on basics, SQL differences, best practices, replication, and debugging.
+See `docs/` for ClickHouse beginner guides:
+- [Database Fundamentals](docs/database-fundamentals.md) - OLAP vs OLTP, B+ Tree vs LSM Tree, MergeTree ORDER BY
+- [ClickHouse Basics](docs/clickhouse-basics.md) - Column storage, core concepts, data types
+- [Table Engines](docs/clickhouse-engines.md) - MergeTree family, Log family, choosing the right engine
+- [SQL Differences](docs/sql-differences.md) - Coming from MySQL/PostgreSQL
+- [Best Practices](docs/best-practices.md) - Insert patterns, schema design, performance
+- [Replication & Distributed](docs/replication-distributed.md) - How data replicates across nodes
+- [Debugging & Troubleshooting](docs/debugging-troubleshooting.md) - EXPLAIN, system tables, common issues

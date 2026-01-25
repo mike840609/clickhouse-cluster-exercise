@@ -5,7 +5,9 @@ ClickHouse Cluster Setup with 1 Shard and 3 Replicas using **ClickHouse Keeper**
 ### Documentation
 
 New to ClickHouse? Check out the [docs/](docs/) folder:
-- [ClickHouse Basics](docs/clickhouse-basics.md) - Column storage, OLAP vs OLTP, when to use
+- [Database Fundamentals](docs/database-fundamentals.md) - OLAP vs OLTP, B+ Tree vs LSM Tree, MergeTree ORDER BY
+- [ClickHouse Basics](docs/clickhouse-basics.md) - Column storage, core concepts, when to use
+- [Table Engines](docs/clickhouse-engines.md) - MergeTree family, Log family, choosing the right engine
 - [SQL Differences](docs/sql-differences.md) - Coming from MySQL/PostgreSQL
 - [Best Practices](docs/best-practices.md) - Insert patterns, schema design, performance
 - [Replication & Distributed](docs/replication-distributed.md) - How data replicates across nodes
